@@ -1,4 +1,7 @@
 <div align="center">
+  <p>How to run the project(localy) - node express.js in terminal</p>
+  <p>http://localhost:9000/api?username=XaXtric7&show_icons=true&theme=radical</p>
+  <p>http://localhost:9000/api?username=XaXtric7&show_icons=true&theme=radical</p>
   <img src="https://res.cloudinary.com/anuraghazra/image/upload/v1594908242/logo_ccswme.svg" width="100px" alt="GitHub Readme Stats" />
   <h1 style="font-size: 28px; margin: 10px 0;">GitHub Readme Stats</h1>
   <p>Get dynamically generated GitHub stats on your READMEs!</p>
