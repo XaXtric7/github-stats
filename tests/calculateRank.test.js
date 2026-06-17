@@ -107,4 +107,34 @@ describe("Test calculateRank", () => {
       }),
     ).toStrictEqual({ level: "S", percentile: 0.4578556547153667 });
   });
+
+  it("supports rank_level override", () => {
+    expect(
+      calculateRank({
+        all_commits: false,
+        commits: 0,
+        prs: 0,
+        issues: 0,
+        reviews: 0,
+        repos: 0,
+        stars: 0,
+        followers: 0,
+        rank_level: "A+",
+      }),
+    ).toStrictEqual({ level: "A+", percentile: 12.5 });
+
+    expect(
+      calculateRank({
+        all_commits: false,
+        commits: 0,
+        prs: 0,
+        issues: 0,
+        reviews: 0,
+        repos: 0,
+        stars: 0,
+        followers: 0,
+        rank_level: "s",
+      }),
+    ).toStrictEqual({ level: "S", percentile: 1 });
+  });
 });

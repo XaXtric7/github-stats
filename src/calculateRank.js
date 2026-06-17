@@ -31,6 +31,7 @@ function log_normal_cdf(x) {
  * @param {number} params.repos Total number of repos.
  * @param {number} params.stars The number of stars.
  * @param {number} params.followers The number of followers.
+ * @param {string=} params.rank_level The rank level override.
  * @returns {{ level: string, percentile: number }} The users rank.
  */
 function calculateRank({
@@ -43,6 +44,7 @@ function calculateRank({
   repos, // unused
   stars,
   followers,
+  rank_level,
 }) {
   const COMMITS_MEDIAN = all_commits ? 1000 : 250,
     COMMITS_WEIGHT = 2;
@@ -67,6 +69,14 @@ function calculateRank({
 
   const THRESHOLDS = [1, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100];
   const LEVELS = ["S", "A+", "A", "A-", "B+", "B", "B-", "C+", "C"];
+
+  if (rank_level) {
+    const levelUpper = rank_level.toUpperCase();
+    const levelIndex = LEVELS.indexOf(levelUpper);
+    if (levelIndex !== -1) {
+      return { level: levelUpper, percentile: THRESHOLDS[levelIndex] };
+    }
+  }
 
   const rank =
     1 -

@@ -191,6 +191,30 @@ describe("Test /api/", () => {
     );
   });
 
+  it("should get the rank_level query option", async () => {
+    const { req, res } = faker(
+      {
+        username: "anuraghazra",
+        rank_level: "A+",
+      },
+      data_stats,
+    );
+
+    const expectedStats = {
+      ...stats,
+      rank: { level: "A+", percentile: 12.5 },
+    };
+
+    await api(req, res);
+
+    expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
+    expect(res.send).toHaveBeenCalledWith(
+      renderStatsCard(expectedStats, {
+        rank_level: "A+",
+      }),
+    );
+  });
+
   it("should have proper cache", async () => {
     const { req, res } = faker({}, data_stats);
 

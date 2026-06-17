@@ -146,6 +146,7 @@ const statsFetcher = async ({
 
     // Disable multi page fetching on public Vercel instance due to rate limits.
     const repoNodesWithStars = repoNodes.filter(
+      /** @param {{ stargazers: { totalCount: number } }} node */
       (node) => node.stargazers.totalCount !== 0,
     );
     hasNextPage =
@@ -161,7 +162,7 @@ const statsFetcher = async ({
 /**
  * Fetch total commits using the REST API.
  *
- * @param {object} variables Fetcher variables.
+ * @param {{ login: string }} variables Fetcher variables.
  * @param {string} token GitHub token.
  * @returns {Promise<import('axios').AxiosResponse>} Axios response.
  *
@@ -199,7 +200,7 @@ const totalCommitsFetcher = async (username) => {
     res = await retryer(fetchTotalCommits, { login: username });
   } catch (err) {
     logger.log(err);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 
   const totalCount = res.data.total_count;
@@ -222,6 +223,7 @@ const totalCommitsFetcher = async (username) => {
  * @param {boolean} include_discussions Include discussions.
  * @param {boolean} include_discussions_answers Include discussions answers.
  * @param {number|undefined} commits_year Year to count total commits
+ * @param {string=} rank_level The rank level override.
  * @returns {Promise<import("./types").StatsData>} Stats data.
  */
 const fetchStats = async (
@@ -232,6 +234,7 @@ const fetchStats = async (
   include_discussions = false,
   include_discussions_answers = false,
   commits_year,
+  rank_level,
 ) => {
   if (!username) {
     throw new MissingParamError(["username"]);
@@ -315,12 +318,22 @@ const fetchStats = async (
   let repoToHide = new Set(allExcludedRepos);
 
   stats.totalStars = user.repositories.nodes
-    .filter((data) => {
-      return !repoToHide.has(data.name);
-    })
-    .reduce((prev, curr) => {
-      return prev + curr.stargazers.totalCount;
-    }, 0);
+    .filter(
+      /** @param {{ name: string }} data */
+      (data) => {
+        return !repoToHide.has(data.name);
+      },
+    )
+    .reduce(
+      /**
+       * @param {number} prev
+       * @param {{ stargazers: { totalCount: number } }} curr
+       */
+      (prev, curr) => {
+        return prev + curr.stargazers.totalCount;
+      },
+      0,
+    );
 
   stats.rank = calculateRank({
     all_commits: include_all_commits,
@@ -331,6 +344,7 @@ const fetchStats = async (
     repos: user.repositories.totalCount,
     stars: stats.totalStars,
     followers: user.followers.totalCount,
+    rank_level,
   });
 
   return stats;
