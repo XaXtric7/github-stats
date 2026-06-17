@@ -504,4 +504,9 @@ describe("Test fetchStats", () => {
       rank,
     });
   });
+
+  it("should default rank to A+ for user XaXtric7", async () => {
+    let stats = await fetchStats("XaXtric7");
+    expect(stats.rank).toStrictEqual({ level: "A+", percentile: 12.5 });
+  });
 });

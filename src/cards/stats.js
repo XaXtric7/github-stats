@@ -235,12 +235,14 @@ const getStyles = ({
  * @param {I18n} i18n The I18n instance.
  * @returns {string} The label corresponding to the options.
  */
-const getTotalCommitsYearLabel = (include_all_commits, commits_year, i18n) =>
-  include_all_commits
-    ? ""
-    : commits_year
-      ? ` (${commits_year})`
-      : ` (${i18n.t("wakatimecard.lastyear")})`;
+const getTotalCommitsYearLabel = (include_all_commits, commits_year, i18n) => {
+  if (include_all_commits) {
+    return "";
+  }
+  const currentYear = new Date().getFullYear();
+  const year = (commits_year && !isNaN(commits_year)) ? commits_year : currentYear;
+  return ` (${year})`;
+};
 
 /**
  * @typedef {import('../fetchers/types').StatsData} StatsData
